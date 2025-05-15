@@ -28,7 +28,6 @@ def get_access_token(client_id, client_secret, tenant_id):
 
     return response.json().get("access_token")
 
-
 access_token = get_access_token(client_id, client_secret, tenant_id)
 
 def get_onedrive_files(access_token):
