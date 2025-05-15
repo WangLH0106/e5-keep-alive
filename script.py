@@ -17,9 +17,17 @@ def get_access_token(client_id, client_secret, tenant_id):
         "client_secret": client_secret,
         "scope": "https://graph.microsoft.com/.default"
     }
+
     response = requests.post(url, headers=headers, data=data)
-    response.raise_for_status()
+
+    if response.status_code != 200:
+        print("❌ 获取 Access Token 失败")
+        print("状态码：", response.status_code)
+        print("响应内容：", response.text)
+        exit(1)
+
     return response.json().get("access_token")
+
 
 access_token = get_access_token(client_id, client_secret, tenant_id)
 
