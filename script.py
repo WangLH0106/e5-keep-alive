@@ -1,10 +1,15 @@
 import os
 import requests
 
-# 从 GitHub Secrets 中读取 Azure 应用信息
+# 从环境变量中读取
 client_id = os.getenv('CLIENT_ID')
 client_secret = os.getenv('CLIENT_SECRET')
 tenant_id = os.getenv('TENANT_ID')
+
+# 打印调试信息（不打印值，只打印是否为空）
+print(f"CLIENT_ID is {'set' if client_id else 'NOT set'}")
+print(f"CLIENT_SECRET is {'set' if client_secret else 'NOT set'}")
+print(f"TENANT_ID is {'set' if tenant_id else 'NOT set'}")
 
 # 获取 Access Token
 def get_access_token(client_id, client_secret, tenant_id):
