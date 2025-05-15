@@ -1,45 +1,31 @@
-import requests
-import json
-import os
+name: Keep E5 Subscription Alive
 
-# 从 GitHub Secrets 中读取环境变量
-tenant_id = os.getenv('TENANT_ID')
-client_id = os.getenv('CLIENT_ID')
-client_secret = os.getenv('CLIENT_SECRET')
+on:
+  schedule:
+    - cron: '0 0 * * *'  # 每天 UTC 0 点运行一次
 
-# 获取 Microsoft Graph API 的访问令牌
-def get_access_token(tenant_id, client_id, client_secret):
-    url = f"https://login.microsoftonline.com/{tenant_id}/oauth2/v2.0/token"
-    headers = {
-        "Content-Type": "application/x-www-form-urlencoded"
-    }
-    body = {
-        "grant_type": "client_credentials",
-        "client_id": client_id,
-        "client_secret": client_secret,
-        "scope": "https://graph.microsoft.com/.default"
-    }
-    response = requests.post(url, headers=headers, data=body)
-    response.raise_for_status()
-    return response.json()["access_token"]
+jobs:
+  keep-alive:
+    runs-on: ubuntu-latest
 
-# 调用 OneDrive API 获取文件列表
-def list_onedrive_files(access_token):
-    url = "https://graph.microsoft.com/v1.0/me/drive/root/children"
-    headers = {
-        "Authorization": f"Bearer {access_token}"
-    }
-    response = requests.get(url, headers=headers)
-    response.raise_for_status()
-    return response.json()
+    steps:
+    - name: Checkout repository content
+      uses: actions/checkout@v2
 
-# 主函数
-def main():
-    access_token = get_access_token(tenant_id, client_id, client_secret)
-    files = list_onedrive_files(access_token)
-    print("OneDrive 文件列表：")
-    for file in files.get("value", []):
-        print(file.get("name"))
+    - name: Set up Python
+      uses: actions/setup-python@v2
+      with:
+        python-version: 3.x
 
-if __name__ == "__main__":
-    main()
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install requests
+
+    - name: Run script
+      env:
+        TENANT_ID: ${{ secrets.TENANT_ID }}
+        CLIENT_ID: ${{ secrets.CLIENT_ID }}
+        CLIENT_SECRET: ${{ secrets.CLIENT_SECRET }}
+      run: |
+        python main.py
