@@ -15,11 +15,15 @@ print(f"TENANT_ID is {'set' if tenant_id else 'NOT set'}")
 def get_access_token(client_id, client_secret, tenant_id):
     url = f"https://login.microsoftonline.com/{tenant_id}/oauth2/v2.0/token"
     headers = {
-@@ -24,25 +10,9 @@ def get_access_token(client_id, client_secret, tenant_id):
+        "Content-Type": "application/x-www-form-urlencoded"
+    }
+    data = {
+        "grant_type": "client_credentials",
+        "client_id": client_id,
+        "client_secret": client_secret,
         "scope": "https://graph.microsoft.com/.default"
     }
     response = requests.post(url, headers=headers, data=data)
-    response.raise_for_status()
     if response.status_code != 200:
         print("Failed to get access token:")
         print(response.status_code)
@@ -27,7 +31,6 @@ def get_access_token(client_id, client_secret, tenant_id):
         exit(1)
     return response.json().get("access_token")
 
-access_token = get_access_token(client_id, client_secret, tenant_id)
 
 # 调用 OneDrive API
 endpoint = "https://graph.microsoft.com/v1.0/me/drive/root/children"
