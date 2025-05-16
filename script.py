@@ -31,6 +31,7 @@ def get_access_token(client_id, client_secret, tenant_id):
         exit(1)
     return response.json().get("access_token")
 
+access_token = get_access_token(client_id, client_secret, tenant_id)
 
 # 调用 OneDrive API
 endpoint = "https://graph.microsoft.com/v1.0/me/drive/root/children"
